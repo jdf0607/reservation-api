@@ -9,11 +9,14 @@ use App\Http\Requests\UpdateReservationStatusRequest;
 use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
 use App\Services\ReservationService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ReservationController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function __construct(
         private readonly ReservationService $service
     ) {}
@@ -57,11 +60,11 @@ class ReservationController extends Controller
      */
     public function store(StoreReservationRequest $request)
     {
-        $reservation = $this->service->create($request->validated());
+        $reservation = $this->service->create($request->validated(), $request->user());
 
         return (new ReservationResource($reservation))
             ->response()
-            ->setStatusCode(Response::HTTP_CREATED); // 201
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -69,6 +72,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
+        $this->authorize('view', $reservation);
         return new ReservationResource($reservation->load('events'));
     }
 
@@ -77,8 +81,9 @@ class ReservationController extends Controller
      */
     public function updateStatus(UpdateReservationStatusRequest $request, Reservation $reservation)
     {
-        $newStatus = ReservationStatus::from($request->validated()['status']);
+        $this->authorize('update', $reservation);
 
+        $newStatus = ReservationStatus::from($request->validated()['status']);
         $reservation = $this->service->changeStatus($reservation, $newStatus);
 
         return new ReservationResource($reservation);
@@ -89,6 +94,8 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
+        $this->authorize('delete', $reservation);
+
         $this->service->cancel($reservation);
 
         return response()->json([

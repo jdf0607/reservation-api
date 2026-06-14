@@ -21,6 +21,13 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
+        // Segundo usuario para probar autorización (no tiene reservas propias)
+        \App\Models\User::factory()->create([
+            'name' => 'Otro',
+            'email' => 'otro@misterplan.com',
+            'password' => bcrypt('password'),
+        ]);
+
         $this->call([
             ReservationSeeder::class,
         ]);

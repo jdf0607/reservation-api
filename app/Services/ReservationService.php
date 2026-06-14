@@ -8,17 +8,19 @@ use App\Models\Reservation;
 use App\Models\ReservationEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class ReservationService
 {
     /**
      * Crea una reserva y registra su evento de creación.
      */
-    public function create(array $data): Reservation
+    public function create(array $data, User $user): Reservation
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $user) {
             $data['status'] = ReservationStatus::Pending;
-        
+            $data['user_id'] = $user->id;
+
             $reservation = Reservation::create($data);
 
             $this->logEvent($reservation, 'created',

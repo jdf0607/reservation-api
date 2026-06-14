@@ -6,12 +6,13 @@ use App\Enums\ReservationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Reservation extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'guest_name',
         'guest_email',
         'property_name',
@@ -32,5 +33,10 @@ class Reservation extends Model
     public function events(): HasMany
     {
         return $this->hasMany(ReservationEvent::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
