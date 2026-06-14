@@ -13,11 +13,11 @@ Microservicio de gestión de reservas de alojamiento: **API REST en Laravel 13**
 PHP 8.3 · Laravel 13 · SQLite · Laravel Sanctum · Pest PHP · Vue 3 (Composition API) · Tailwind CSS · Vite
 
 ## Estructura
+
+```
 /            → Backend Laravel (API REST)
-
 /frontend    → Frontend Vue 3 (SPA)
-
----
+```
 
 ## Puesta en marcha
 
