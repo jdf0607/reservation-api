@@ -9,8 +9,13 @@ Route::post('login', [AuthController::class, 'login']);
 
 // Rutas protegidas: requieren token válido (auth:sanctum)
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
+    Route::post('reservations/daily-summary', [ReservationController::class, 'dailySummary'])
+        ->name('reservations.daily-summary');
+
     Route::apiResource('reservations', ReservationController::class);
 
     Route::patch('reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])
         ->name('reservations.update-status');
+
+    
 });

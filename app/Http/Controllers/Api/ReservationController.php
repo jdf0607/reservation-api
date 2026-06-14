@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationStatusRequest;
 use App\Http\Resources\ReservationResource;
+use App\Jobs\GenerateDailySummary;
 use App\Models\Reservation;
 use App\Services\ReservationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -16,7 +17,7 @@ use Illuminate\Http\Response;
 class ReservationController extends Controller
 {
     use AuthorizesRequests;
-    
+
     public function __construct(
         private readonly ReservationService $service
     ) {}
@@ -54,6 +55,7 @@ class ReservationController extends Controller
 
         return ReservationResource::collection($reservations);
     }
+
 
     /**
      * Crear una reserva.
@@ -101,5 +103,17 @@ class ReservationController extends Controller
         return response()->json([
             'message' => 'Reserva cancelada correctamente.',
         ]);
+    }
+
+    /**
+     * Encola la generación del resumen diario (tarea asíncrona).
+     */
+    public function dailySummary()
+    {
+        GenerateDailySummary::dispatch();
+
+        return response()->json([
+            'message' => 'Resumen diario encolado. Se procesará en segundo plano.',
+        ], 202); // 202 Accepted: petición aceptada, se procesará luego
     }
 }
