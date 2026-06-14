@@ -5,7 +5,7 @@ Microservicio de gestión de reservas de alojamiento: **API REST en Laravel 13**
 ## Enlaces
 
 - **Backend desplegado:** https://reservation-api-production-ebdf.up.railway.app
-- **Frontend desplegado:** https://reservation-7xvu7wpl0-josedurans-projects1.vercel.app
+- **Frontend desplegado:** https://reservation-api-gold.vercel.app
 - **Repositorio:** https://github.com/jdf0607/reservation-api
 
 ## Stack
