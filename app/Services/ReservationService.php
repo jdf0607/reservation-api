@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ReservationStatus;
+use App\Events\ReservationConfirmed;
 use App\Models\Reservation;
 use App\Models\ReservationEvent;
 use Illuminate\Support\Facades\DB;
@@ -39,13 +40,18 @@ class ReservationService
         }
 
         return DB::transaction(function () use ($reservation, $newStatus) {
-            $reservation->update(['status' => $newStatus]);
+    $reservation->update(['status' => $newStatus]);
 
-            $this->logEvent($reservation, $newStatus->value,
-                "El estado cambió a '{$newStatus->value}'.");
+    $this->logEvent($reservation, $newStatus->value,
+        "El estado cambió a '{$newStatus->value}'.");
 
-            return $reservation->refresh();
-        });
+        // Si se confirma, anunciamos el hecho. Quién reaccione es cosa de los listeners.
+        if ($newStatus === ReservationStatus::Confirmed) {
+            ReservationConfirmed::dispatch($reservation);
+        }
+
+        return $reservation->refresh();
+    });
     }
 
     /**
