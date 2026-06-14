@@ -17,6 +17,8 @@ class ReservationService
     public function create(array $data): Reservation
     {
         return DB::transaction(function () use ($data) {
+            $data['status'] = ReservationStatus::Pending;
+        
             $reservation = Reservation::create($data);
 
             $this->logEvent($reservation, 'created',
