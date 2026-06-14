@@ -1,0 +1,107 @@
+{
+  "info": {
+    "name": "MisterPlan — Reservation API",
+    "description": "API REST de gestión de reservas de alojamiento. Define la variable {{base_url}} en el entorno (por defecto http://127.0.0.1:8000).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Listar reservas",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/reservations?status=pending&from=2026-01-01&to=2026-12-31&guest=Juan",
+          "host": ["{{base_url}}"],
+          "path": ["api", "reservations"],
+          "query": [
+            { "key": "status", "value": "pending", "description": "Filtra por estado: pending, confirmed o cancelled" },
+            { "key": "from", "value": "2026-01-01", "description": "Fecha de entrada desde (YYYY-MM-DD)" },
+            { "key": "to", "value": "2026-12-31", "description": "Fecha de entrada hasta (YYYY-MM-DD)" },
+            { "key": "guest", "value": "Juan", "description": "Busca por nombre o email del huésped" }
+          ]
+        },
+        "description": "Lista las reservas con filtros combinables. Todos los parámetros son opcionales."
+      }
+    },
+    {
+      "name": "Crear reserva",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"guest_name\": \"Ana López\",\n  \"guest_email\": \"ana@example.com\",\n  \"property_name\": \"Villa Costa\",\n  \"check_in\": \"2026-09-01\",\n  \"check_out\": \"2026-09-05\",\n  \"amount\": 450.00,\n  \"notes\": \"Llegada tardía prevista\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/reservations",
+          "host": ["{{base_url}}"],
+          "path": ["api", "reservations"]
+        },
+        "description": "Crea una reserva nueva. Nace siempre con estado 'pending'. Devuelve 201 Created."
+      }
+    },
+    {
+      "name": "Ver detalle de reserva",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/reservations/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "reservations", "1"]
+        },
+        "description": "Devuelve una reserva con su historial de eventos (timeline)."
+      }
+    },
+    {
+      "name": "Modificar estado",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"confirmed\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/reservations/1/status",
+          "host": ["{{base_url}}"],
+          "path": ["api", "reservations", "1", "status"]
+        },
+        "description": "Cambia el estado de una reserva. Valida transiciones legales (p.ej. una reserva cancelada no puede confirmarse). Al confirmar dispara el evento ReservationConfirmed."
+      }
+    },
+    {
+      "name": "Cancelar reserva",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/reservations/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "reservations", "1"]
+        },
+        "description": "Cancela una reserva (cambia su estado a 'cancelled', no la borra de la base de datos)."
+      }
+    }
+  ]
+}

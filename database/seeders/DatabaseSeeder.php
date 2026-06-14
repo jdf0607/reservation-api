@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        \App\Models\User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@misterplan.com',
+            'password' => bcrypt('password'),
+        ]);
+
         $this->call([
             ReservationSeeder::class,
         ]);
