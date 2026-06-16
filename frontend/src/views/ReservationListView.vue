@@ -2,9 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApi } from '../composables/useApi'
-import { useToast } from '../composables/useToast'
 
-const { showToast } = useToast()
 const { api } = useApi()
 const router = useRouter()
 
@@ -20,14 +18,6 @@ function formatDate(value) {
 // Filtros
 const filters = ref({ status: '', from: '', to: '', guest: '' })
 
-async function generateSummary() {
-  try {
-    await api.post('/reservations/daily-summary')
-    showToast('Resumen diario encolado. Se procesará en segundo plano.', 'success')
-  } catch (e) {
-    showToast('No se pudo encolar el resumen.', 'error')
-  }
-}
 
 async function fetchReservations() {
   loading.value = true
@@ -81,12 +71,6 @@ onMounted(fetchReservations)
     >
       + Nueva reserva
     </router-link>
-    <button
-      @click="generateSummary"
-      class="bg-gray-700 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-800 transition"
-    >
-      Generar resumen diario
-    </button>
   </div>
 
   <h1 class="text-2xl font-bold text-gray-800">

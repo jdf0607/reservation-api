@@ -32,7 +32,16 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-API disponible en `http://127.0.0.1:8000/api`. Para procesar jobs en cola: `php artisan queue:work`.
+API disponible en `http://127.0.0.1:8000/api`. 
+Para procesar jobs en cola: `php artisan queue:work`.
+
+El resumen diario está programado a medianoche vía el scheduler de Laravel. En producción se activa con una entrada de cron del sistema que ejecuta el scheduler cada minuto:
+
+```bash
+* * * * * cd /ruta/proyecto && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Para probarlo manualmente sin esperar: `php artisan schedule:test.`
 
 Usuarios de prueba creados por el seeder:
 
@@ -83,7 +92,7 @@ Colección de Postman incluida en `reservation-api.postman_collection.json`.
 
 **Eventos para desacoplar.** Al confirmar una reserva, el service dispara `ReservationConfirmed` en lugar de notificar directamente. Un listener reacciona registrando la notificación. Añadir nuevas reacciones (email, SMS, métricas) no requiere tocar el service: solo anuncia el hecho, y quién reacciona es problema de los listeners.
 
-**Jobs en cola.** `GenerateDailySummary` es trabajo diferido pensado para segundo plano (driver `database`). La distinción clave: un evento reacciona a algo que acaba de pasar y se procesa enseguida; un job se encola y procesa aparte, sin bloquear la respuesta al usuario.
+**Jobs en cola.** `GenerateDailySummary` es trabajo diferido pensado para segundo plano (driver `database`). . La distinción clave: un evento reacciona a algo que acaba de pasar y se procesa enseguida; un job se encola y procesa aparte, sin bloquear la respuesta al usuario. El job está programado para ejecutarse automáticamente cada día a medianoche mediante el scheduler de Laravel (routes/console.php); su salida (conteos por estado) se registra en el log, como corresponde a una tarea de fondo sin interacción de usuario.
 
 **API Resources.** Las respuestas no exponen el modelo crudo. Las fechas se formatean (`2026-08-07` en vez del timestamp completo), el enum se convierte a string, y los eventos solo se incluyen cuando se cargan (`whenLoaded`), evitando el problema N+1: en el listado no se cargan (serían cientos de queries), en el detalle sí.
 
