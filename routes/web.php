@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Todas las rutas que no son /api van al frontend Vue (SPA)
+Route::get('/{any?}', function () {
+    return view('app');
+})->where('any', '^(?!api).*$');
